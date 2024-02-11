@@ -15,10 +15,27 @@
             <RowDefinition Height="45"/>
         </Grid.RowDefinitions>
 
+        <Button Style="{StaticResource ButtonStyle}" Content="Back" 
+                x:Name="ButtonBack" Grid.Row="0" Width="115" HorizontalAlignment="Left" Margin="30 0 0 0" Click="BackButton_Click"/>
+
         <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden"
-               Content="/Pages/AuthenticationPage.xaml"/>
-        
-        
+               Source="/Pages/AuthenticationPage.xaml" Navigated="MainFrame_Navigated"/>
+
+        <StatusBar Grid.Row="2">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+
+            <Label Grid.Column="1" Content="{Binding CurrentDateTime, UpdateSourceTrigger=PropertyChanged}" 
+                   FontSize="20" FontWeight="DemiBold" Foreground="Black" HorizontalAlignment="Right" Margin="0 0 0 0"/>
+        </StatusBar>
 
     </Grid>
 </Window>
