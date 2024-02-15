@@ -50,18 +50,18 @@ namespace Bashirov_16.Pages
                 {
                     MessageBox.Show("The user were found successfully!", "User were found", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                    //switch (user.Role)
-                    //{
-                    //    case "Страховой агент":
-                    //        NavigationService?.Navigate(new DirectorMenu());
-                    //        break;
-                    //    case "Водитель":
-                    //        NavigationService?.Navigate(new CustomerMenu());
-                    //        break;
-                    //    default:
-                    //        NavigationService?.Navigate(new CustomerMenu());
-                    //        break;
-                    //}
+                    switch (user.Role)
+                    {
+                        case "Страховой агент":
+                            NavigationService?.Navigate(new CalcPage());
+                            break;
+                        case "Водитель":
+                            NavigationService?.Navigate(new CalcPage());
+                            break;
+                        default:
+                            NavigationService?.Navigate(new CalcPage());
+                            break;
+                    }
                 }
             }
         }

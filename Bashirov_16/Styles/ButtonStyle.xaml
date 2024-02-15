@@ -10,5 +10,12 @@
         <Setter Property="FontSize" Value="30" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
-    
+
+    <Style x:Key="CalcButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Foreground" Value="#34abeb" />
+        <Setter Property="FontFamily" Value="Ubuntu" />
+        <Setter Property="FontSize" Value="50" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
 </ResourceDictionary>
