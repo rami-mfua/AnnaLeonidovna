@@ -8,5 +8,5 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
-    
+
 </ResourceDictionary>

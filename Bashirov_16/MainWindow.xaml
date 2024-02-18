@@ -17,9 +17,12 @@
 
         <Button Style="{StaticResource ButtonStyle}" Content="Back" 
                 x:Name="ButtonBack" Grid.Row="0" Width="115" HorizontalAlignment="Left" Margin="30 0 0 0" Click="BackButton_Click"/>
+        <Button Style="{StaticResource ButtonStyle}" Content="Export" 
+                x:Name="ExportButton" Grid.Row="0" Width="115" HorizontalAlignment="Center" Margin="30 0 0 0" Click="ExportButton_Click"/>
 
         <Frame x:Name="MainFrame" Grid.Row="1" NavigationUIVisibility="Hidden"
-               Source="/Pages/AuthenticationPage.xaml" Navigated="MainFrame_Navigated"/>
+               Source="/Pages/AuthenticationPage.xaml" Navigated="MainFrame_Navigated"
+               />
 
         <StatusBar Grid.Row="2">
             <StatusBar.ItemsPanel>

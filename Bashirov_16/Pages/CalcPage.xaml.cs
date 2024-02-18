@@ -26,9 +26,14 @@ namespace Bashirov_16.Pages
             InitializeComponent();
         }
 
-        private void Grid_Click(object sender, RoutedEventArgs e)
+        public void Grid_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = sender as Button;
+            var btn = sender as Button;
+
+            if (btn is null)
+            {
+                return;
+            }
 
             switch (btn.Name)
             {

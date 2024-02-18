@@ -9,12 +9,20 @@
       d:DesignHeight="600" d:DesignWidth="800"
       Title="Calculator">
 
-    <Grid ButtonBase.Click="Grid_Click">
+    <Grid >
+
+        <Grid.Resources>
+            <Style TargetType="Button">
+                <EventSetter Event="Click" Handler="Grid_Click" />
+            </Style>
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="0.25*" />
             <RowDefinition Height="0.4*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="0.25*" />
@@ -28,11 +36,11 @@
 
         <Button x:Name="CancelButton" Content="Remove" Grid.Column="1" Grid.Row="1" 
                 Margin="15 30 30 30" Style="{StaticResource ButtonStyle}" 
-                Foreground="MediumVioletRed" />
+                Foreground="MediumVioletRed" Click="Grid_Click" />
 
         <Border Grid.Row="2"  Margin="30" CornerRadius="30" 
                 Background="White" Padding="10">
-            <Grid>
+            <Grid >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*" />
                     <RowDefinition Height="1*" />
@@ -45,6 +53,12 @@
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="1*" />
                 </Grid.ColumnDefinitions>
+
+                <Grid.Resources>
+                    <Style TargetType="Button">
+                        <EventSetter Event="Click" Handler="Grid_Click" />
+                    </Style>
+                </Grid.Resources>
 
                 <Button x:Name="CommaBtn" Content="," Grid.Row="3" Grid.Column="0" Foreground="Black" Style="{StaticResource CalcButtonStyle}" />
                 <Button x:Name="ZeroBtn" Content="0" Grid.Row="3" Grid.Column="1" Style="{StaticResource CalcButtonStyle}" />

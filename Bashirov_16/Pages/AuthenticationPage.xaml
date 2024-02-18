@@ -29,11 +29,17 @@
         <Label Content="PASSWORD" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
                Style="{StaticResource LabelStyle}" Grid.Column="0" FontSize="15"/>
 
-        <TextBlock Text="Login or email" Name="txtHintLogin" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" FontSize="40" />
+        
         <TextBox x:Name="TextBoxLogin" Grid.Row="1" Grid.Column="1" Margin="10,30" Style="{StaticResource TextBoxStyle}" ToolTip="Provide your LOGIN or email address to continue" />
         <PasswordBox x:Name="PasswordBox" Grid.Row="2" Grid.Column="1" Margin="10,30" ToolTip="Provide your password to continue" />
 
-        <Button x:Name="LogIn" Content="Login/Registration" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="30,20"
+        <TextBlock Grid.Row="3" Grid.ColumnSpan="2" HorizontalAlignment="Center">
+            <Hyperlink NavigateUri="/Pages/RegisterPage.xaml" RequestNavigate="Hyperlink_RequestNavigate">
+                Register
+            </Hyperlink>
+        </TextBlock>
+
+        <Button x:Name="LogIn" Content="Login" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="30,20"
                 Style="{StaticResource ButtonStyle}" Click="LogIn_Click"/>
 
     </Grid>
