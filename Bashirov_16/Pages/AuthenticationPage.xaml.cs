@@ -47,7 +47,7 @@ namespace Bashirov_16.Pages
             using (MySqlCommand command = new MySqlCommand(query, db.getConnection()))
             {
                 command.Parameters.AddWithValue("@Username", TextBoxLogin.Text);
-                command.Parameters.AddWithValue("@Password", PasswordBox.Password);
+                command.Parameters.AddWithValue("@Password", GetHashedPassword(PasswordBox.Password));
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {

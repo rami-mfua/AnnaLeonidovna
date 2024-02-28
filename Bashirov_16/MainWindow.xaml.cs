@@ -1,31 +1,45 @@
 ﻿using Bashirov_16.Pages;
+using Microsoft.Win32;
 using MySql.Data.MySqlClient;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
-using System.Linq;
-using System.Text;
 
-using System.Threading.Tasks;
+using static Bashirov_16.Helpers.Hashing;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static Bashirov_16.Model.PostgreModel;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Linq;
 
 namespace Bashirov_16
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+
+    public class CustomExcelFormat
+    {
+        [Column("login")]
+        public string LOGIN { get; set; }
+        [Column("password")]
+        public string PASSWORD { get; set; }
+        [Column("role")]
+        public string ROLE { get; set; }
+        [Column("firstname")]
+        public string FIRSTNAME { get; set; }
+        [Column("lastname")]
+        public string LASTNAME { get; set; }
+        [Column("patronymic")]
+        public string PATRONYMIC { get; set; }
+    }
+
+        /// <summary>
+        /// Логика взаимодействия для MainWindow.xaml
+        /// </summary>
+        public partial class MainWindow : Window
     {
         public MainWindow()
         {
@@ -81,8 +95,8 @@ namespace Bashirov_16
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {
-            if (!(e.Content is Page page)) return;
-            this.Title = $"Project by Bashirov - {page.Title}";
+            if (!(e.Content is DocumentFormat.OpenXml.Spreadsheet.Page page)) return;
+            this.Title = $"Project by Bashirov - {page.LocalName}";
 
             if (page is Pages.AuthenticationPage)
             {
@@ -110,7 +124,7 @@ namespace Bashirov_16
 
             ExportUsersToTextFile(filePath);
 
-            Console.WriteLine("Users exported to users.txt");
+            MessageBox.Show("Users exported to users.txt", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
 
             // Открываем файл в notepad
             System.Diagnostics.Process.Start("notepad.exe", filePath);
@@ -122,7 +136,7 @@ namespace Bashirov_16
             {
                 connection.Open();
 
-                string query = "SELECT id, login, user_role, firstname, lastname, patronymic FROM users";
+                string query = "SELECT id, login, user_password, user_role, firstname, lastname, patronymic FROM users";
                 MySqlCommand command = new MySqlCommand(query, connection);
 
                 using (MySqlDataReader reader = command.ExecuteReader())
@@ -150,6 +164,120 @@ namespace Bashirov_16
                                 $" Patronymic: {user.patronymic}";
                             writer.WriteLine(userLine);
                         }
+                    }
+                }
+            }
+        }
+
+        private void ImportButton_Click(object sender, RoutedEventArgs e)
+        {
+            var fileDialog = new OpenFileDialog
+            {
+                Filter = "Excel Files|*.xls;*.xlsx;*.xlsm"
+            };
+
+            if (!fileDialog.ShowDialog().HasValue)
+            {
+                return;
+            }
+
+            var filePath = fileDialog.FileName;
+
+            ExcelParser(filePath);
+
+        }
+
+
+        private void ExcelParser(string xlsx_file_path)
+        {
+            List<CustomExcelFormat> items = new List<CustomExcelFormat>();
+
+            using (SpreadsheetDocument document = SpreadsheetDocument.Open(xlsx_file_path, false))
+            {
+                WorkbookPart workbookPart = document.WorkbookPart;
+                WorksheetPart worksheetPart = workbookPart.WorksheetParts.FirstOrDefault();
+                Worksheet worksheet = worksheetPart.Worksheet;
+                SheetData sheetData = worksheet.GetFirstChild<SheetData>();
+
+                foreach (Row row in sheetData.Elements<Row>().Skip(1)) // skipping header row
+                {
+                    CustomExcelFormat item = new CustomExcelFormat();
+                    int cellIndex = 1;
+
+                    foreach (Cell cell in row.Elements<Cell>())
+                    {
+                        string cellValue = cell.CellValue.Text;
+
+                        switch (cellIndex)
+                        {
+                            case 1:
+                                item.LOGIN = cellValue;
+                                break;
+                            case 2:
+                                item.PASSWORD = cellValue;
+                                break;
+                            case 3:
+                                item.ROLE = cellValue;
+                                break;
+                            case 4:
+                                item.FIRSTNAME = cellValue;
+                                break;
+                            case 5:
+                                item.LASTNAME = cellValue;
+                                break;
+                            case 6:
+                                item.PATRONYMIC = cellValue;
+                                break;
+                        }
+
+                        cellIndex++;
+                    }
+
+                    items.Add(item);
+                }
+            }
+
+            InsertIntoXLSX(items);
+        }
+
+        private void InsertIntoXLSX(List<CustomExcelFormat> ls)
+        {
+            using (MySqlConnection connection = db.getConnection())
+            {
+                foreach (CustomExcelFormat item in ls)
+                {
+                    try
+                    {
+                        // Открытие подключения
+                        connection.Open();
+
+                        // Создание SQL-запроса для вставки новой записи пользователя
+                        string query = "INSERT INTO users (login, user_password, user_role, firstname, lastname, patronymic) VALUES (@Login, @Password, @Role, @Firstname, @Lastname, @Patronymic)";
+                        MySqlCommand command = new MySqlCommand(query, connection);
+                        command.Parameters.AddWithValue("@Login", item.LOGIN);
+                        command.Parameters.AddWithValue("@Password", GetHashedPassword(item.PASSWORD));
+                        command.Parameters.AddWithValue("@Role", item.ROLE);
+                        command.Parameters.AddWithValue("@Firstname", item.FIRSTNAME);
+                        command.Parameters.AddWithValue("@Lastname", item.LASTNAME);
+                        command.Parameters.AddWithValue("@Patronymic", item.PATRONYMIC);
+
+                        // Выполнение запроса
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        // Проверка успешности регистрации
+                        if (rowsAffected > 0)
+                        {
+                            MessageBox.Show("Exported to database successfully.", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                            connection.Close();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Exporting to database failed. Please try again.", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"An error occurred during exporting: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }

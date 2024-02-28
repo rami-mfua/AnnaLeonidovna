@@ -39,7 +39,12 @@ namespace Bashirov_16.Pages
             string login = LoginBox.Text;
             string password = PasswordBox.Password;
             string reEnteredPassword = RePasswordBox.Password;
-            string role = RoleBox.SelectedItem?.ToString();
+            string roleName = "";
+            if (RoleBox.SelectedItem != null)
+            {
+                string selectedRole = RoleBox.SelectedItem.ToString();
+                roleName = selectedRole.Substring(selectedRole.IndexOf(":") + 2);
+            }
             string firstname = "";
             string lastname = "";
             string patronymic = "";
@@ -57,7 +62,7 @@ namespace Bashirov_16.Pages
             DB db = new DB();
 
             // Проверка обязательных полей
-            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(reEnteredPassword) || string.IsNullOrWhiteSpace(role))
+            if (string.IsNullOrWhiteSpace(login) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(reEnteredPassword) || string.IsNullOrWhiteSpace(roleName))
             {
                 MessageBox.Show("Please fill in all fields.", "Registration Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -83,7 +88,7 @@ namespace Bashirov_16.Pages
                     MySqlCommand command = new MySqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Login", login);
                     command.Parameters.AddWithValue("@Password", GetHashedPassword(password));
-                    command.Parameters.AddWithValue("@Role", role);
+                    command.Parameters.AddWithValue("@Role", roleName);
                     command.Parameters.AddWithValue("@Firstname", firstname);
                     command.Parameters.AddWithValue("@Lastname", lastname);
                     command.Parameters.AddWithValue("@Patronymic", patronymic);
